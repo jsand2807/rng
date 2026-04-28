@@ -21,13 +21,51 @@ end
 function InitObject(Value, ObjectData)
     local Type = GetObjectType(Value)
     local Object = Instance.new(Type)
-    Object.Parent = ObjectData.ParentObject
-    Object.Name = ObjectData.ObjectName
-    Object.Value = ObjectData.ObjectValue
+    Object.Parent = ObjectData.Parent
+    Object.Name = ObjectData.Name
+    if Type == "NumberValue" then
+        Value = math.floor(Value)
+    end
+    Object.Value = Value
+end
+
+function CreateFolder(Table, ObjectData)
+    local Folder = Instance.new("Folder")
+    Folder.Name = ObjectData.Name
+    Folder.Parent = ObjectData.Parent
+    for Name, Value in Table do
+        local ObjType = GetObjectType(Value)
+        local Data = {
+            Name = Name,
+            Parent = Folder
+        }
+        if ObjType == "Folder" then
+            CreateFolder(Value, Data)
+        else
+            InitObject(Value, Data)
+        end
+    end
+
+    return Folder
 end
 
 function module.CreateDataObject(Table)
+    local DataObject = Instance.new("Folder")
+
+    for Name, Value in Table do
+        local ObjType = GetObjectType(Value)
+        local Data = {
+            Name = Name,
+            Parent = DataObject
+        }
+        if ObjType == "Folder" then
+            CreateFolder(Value, Data)
+        else
+            InitObject(Value, Data)
+        end
+    end
     
+    return DataObject
 end
 
 return module
