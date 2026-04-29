@@ -7,15 +7,29 @@ if game["Run Service"]:IsStudio() then
     ExtraStr ..= "STUDIO"
 end
 
-local ConvertTable = require(game.ReplicatedStorage.Shared.Modules.ConvertTable)
-local DataTemplate = require(script.DataTemplate)
+local ConvertTable = require(game.ReplicatedStorage.Modules.ConvertTable)
+local DataTemplate = require(script.Parent.DataTemplate)
 
 module.DataStores = {
     PlayerData = DSS:GetDataStore("PlayerData"..ExtraStr)
 }
 
 function module.LoadData(Player)
+    local ID = Player.UserId
+    local Data = DataTemplate.new()
+    local Saved = module.DataStores.PlayerData:GetAsync(ID)
+    if Saved then
+        Data = Saved
+    end
     
+    local DataObject = ConvertTable.CreateDataObject(Data)
+    DataObject.Name = "Data"
+    DataObject.Parent = Player
+end
+
+function module.SaveData(Player, Data)
+    local ID = Player.UserId
+    print(ConvertTable.CreateTable(Data))
 end
 
 return module

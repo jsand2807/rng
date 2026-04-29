@@ -1,5 +1,7 @@
 local module = {}
 
+--TABLE TO OBJECT--
+
 function Type(Value)
     return typeof(Value)
 end
@@ -66,6 +68,22 @@ function module.CreateDataObject(Table)
     end
     
     return DataObject
+end
+
+--OBJECT TO TABLE--
+
+function module.CreateTable(Object)
+    local Data = {}
+
+    for i,v in Object:GetChildren() do
+        if v:IsA("Folder") then
+            Data[v.Name] = module.CreateTable(v)
+        else
+            Data[v.Name] = v.Value
+        end
+    end
+
+    return Data
 end
 
 return module
