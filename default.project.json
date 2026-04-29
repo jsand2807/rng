@@ -5,7 +5,13 @@
 
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
-      "$path": "src/shared"
+      "$path": "src/shared",
+      "Remotes": {
+        "$className": "Folder",
+        "Roll": {
+          "$className": "RemoteFunction"
+        }
+      }
     },
 
     "ServerScriptService": {

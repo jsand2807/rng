@@ -29,7 +29,8 @@ end
 
 function module.SaveData(Player, Data)
     local ID = Player.UserId
-    print(ConvertTable.CreateTable(Data))
+    local Data = ConvertTable.CreateTable(Data)
+    module.DataStores.PlayerData:SetAsync(ID, Data)
 end
 
 return module
