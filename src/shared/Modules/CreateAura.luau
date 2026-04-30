@@ -12,7 +12,8 @@ function module.new()
         },
         Date = "",
         Luck = 0,
-        Locked = false
+        Locked = false,
+        ID = ""
     }
 end
 
@@ -20,7 +21,7 @@ function module.AddAura(Inventory: Folder, AuraData: table)
     local Object
     local s,e = pcall(function()
         Object = ConvertTable.CreateDataObject(AuraData)
-        Object.Name = RandomID.GetRandomID(15)
+        Object.Name = AuraData.ID
         Object.Parent = Inventory
     end)
     

@@ -10,6 +10,8 @@ local MainGUI = Player.PlayerGui:WaitForChild("MainGUI")
 local Roll = MainGUI.Roll
 local RollButton = Roll.Button
 
+local Notifications = require(Modules.Libraries.Notifications)
+
 local AuraFrame
 
 local debounces = {
@@ -22,10 +24,15 @@ end
 
 RollButton.MouseButton1Click:Connect(function()
     if debounces.Roll then return end
-    debounces.Roll = true
-
+    
     local AuraList = Remotes.Roll:InvokeServer()
 
+    if AuraList.Failed then
+        Notifications.CreateNotification(AuraList, Player)
+        return
+    end
+
+    debounces.Roll = true
     Roll.Visible = false
 
     local Info = TweenInfo.new(.5)
@@ -60,7 +67,7 @@ RollButton.MouseButton1Click:Connect(function()
         AuraFrame.Parent = MainGUI.RollDisplay
         AuraFrame.Position = UDim2.new(0.327, 0, 0.3, 0)
 
-        local TimeBetweenTicks = .25
+        local TimeBetweenTicks = .05 * (i + 1)
 
         local Info = TweenInfo.new(TimeBetweenTicks)
         local TweenData = {

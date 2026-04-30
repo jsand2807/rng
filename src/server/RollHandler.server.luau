@@ -1,6 +1,7 @@
 local Modules = game.ReplicatedStorage.Modules
 local RNGHandler = require(Modules.RNGHandler)
 local CreateAura = require(Modules.CreateAura)
+local RandomID = require(Modules.Libraries.RandomID)
 
 local Remotes = game.ReplicatedStorage.Remotes
 local RollEvent = Remotes.Roll
@@ -20,10 +21,30 @@ game.Players.PlayerRemoving:Connect(function(player)
 end)
 
 RollEvent.OnServerInvoke = function(player)
-    if PlayerDebounces[player] then return end
+    if PlayerDebounces[player] then 
+        local NotifData = {
+            Text = "Please wait a second!",
+            Color = Color3.new(0.792156, 0.054901, 0.054901),
+            Duration = 7.5,
+            Failed = true
+        }
+        return NotifData
+    end
 
     local Data = player:FindFirstChild("Data")
     if not Data then player:Kick("Error: No data found!") end
+
+    local MaxInventory = Data.Stats.MaxInventory.Value
+
+    if #Data.Inventory:GetChildren() == MaxInventory then
+        local NotifData = {
+            Text = "[Warning] Inventory is full!",
+            Color = Color3.new(0.792156, 0.054901, 0.054901),
+            Duration = 7.5,
+            Failed = true
+        }
+        return NotifData
+    end
     
     PlayerDebounces[player] = true
 
@@ -53,7 +74,8 @@ RollEvent.OnServerInvoke = function(player)
         Aura = FinalAura,
         Date = os.date(),
         Luck = CalculatedLuck,
-        Locked = false
+        Locked = false,
+        ID = RandomID.GetRandomID(15)
     }
 
     PendingResponse[player] = AuraData
