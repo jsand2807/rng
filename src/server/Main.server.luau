@@ -1,6 +1,6 @@
 local Modules = game.ReplicatedStorage.Modules
 local DataHandler = require(script.Parent.Data.DataHandler)
-local SavesOn = false
+local SavesOn = true
 
 local loaded = {}
 
@@ -19,3 +19,9 @@ game.Players.PlayerRemoving:Connect(function(player)
 
     loaded[player] = nil
 end)
+
+if game["Run Service"]:IsStudio() then
+    game:BindToClose(function()
+        task.wait(5)
+    end)
+end

@@ -2,12 +2,12 @@ return {
 	AuraInfo = {
 		{
 			Name = "Common",
-			MutationOf = nil,
+			MutationOf = "None",
 			OneIn = 2
 		},
 		{
 			Name = "Uncommon",
-			MutationOf = nil,
+			MutationOf = "None",
 			OneIn = 4
 		}
 	},

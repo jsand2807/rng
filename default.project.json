@@ -11,6 +11,12 @@
         "Roll": {
           "$className": "RemoteFunction"
         }
+      },
+      "AuraStuff": {
+        "$className": "Folder",
+        "Frames": {
+          "$className": "Folder" 
+        }
       }
     },
 

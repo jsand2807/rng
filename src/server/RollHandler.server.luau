@@ -1,11 +1,15 @@
 local Modules = game.ReplicatedStorage.Modules
 local RNGHandler = require(Modules.RNGHandler)
-local CreateAura = require(modules.CreateAura)
+local CreateAura = require(Modules.CreateAura)
 
 local Remotes = game.ReplicatedStorage.Remotes
 local RollEvent = Remotes.Roll
+local ResponseEvent = Remotes.AuraResponse
 
 local PlayerDebounces = {}
+local ResponseDebounces = {}
+
+local PendingResponse = {}
 
 game.Players.PlayerAdded:Connect(function(player)
     PlayerDebounces[player] = false
@@ -52,7 +56,25 @@ RollEvent.OnServerInvoke = function(player)
         Locked = false
     }
 
-    CreateAura(Data.Inventory, FinalAura)
+    PendingResponse[player] = AuraData
 
     return AuraList
 end
+
+ResponseEvent.OnServerEvent:Connect(function(player, response)
+    if not PendingResponse[player] then
+        warn("Pending response not found! Try again")
+        return
+    end
+    if ResponseDebounces[player] then
+        return
+    end
+    ResponseDebounces[player] = true
+    if response then
+        CreateAura.AddAura(player.Data.Inventory, PendingResponse[player])
+    end
+    PendingResponse[player] = nil
+    task.delay(.5, function()
+        ResponseDebounces[player] = nil
+    end)
+end)

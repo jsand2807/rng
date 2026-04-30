@@ -1,5 +1,8 @@
 local module = {}
 
+local ConvertTable = require(game.ReplicatedStorage.Modules.Libraries.ConvertTable)
+local RandomID = require(game.ReplicatedStorage.Modules.Libraries.RandomID)
+
 function module.new()
     local AuraData = {
         Aura = {
@@ -13,8 +16,17 @@ function module.new()
     }
 end
 
-function module.CreateAura(Inventory: Folder, AuraData: table)
+function module.AddAura(Inventory: Folder, AuraData: table)
+    local Object
+    local s,e = pcall(function()
+        Object = ConvertTable.CreateDataObject(AuraData)
+        Object.Name = RandomID.GetRandomID(15)
+        Object.Parent = Inventory
+    end)
     
+    if not s then warn(e) return false end
+
+    return true, Object
 end
 
 return module
