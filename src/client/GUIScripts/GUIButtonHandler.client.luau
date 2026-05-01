@@ -193,13 +193,14 @@ MainGUI.RollDisplay.Keep.Button.MouseButton1Click:Connect(function()
     local ClosingTween = TweenService:Create(MainGUI.RollDisplay, Info, {BackgroundTransparency = 1})
 
     ClosingTween:Play()
-
+    ClosingTween.Completed:Wait()
+    
     BuildInventory()
 
 	Roll.Visible = true
 	InventoryButton.Visible = true
     
-    task.wait(1)
+    task.wait(.5)
     debounces.Roll = false
 end)
 
