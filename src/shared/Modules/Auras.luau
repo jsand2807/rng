@@ -14,7 +14,12 @@ return {
 			Name = "Rare",
 			MutationOf = "None",
 			OneIn = 8
+		},
+		{
+			Name = "Good",
+			MutationOf = "None",
+			OneIn = 10
 		}
 	},
-	RaritiesInOrder = {2, 4, 8}
+	RaritiesInOrder = {2, 4, 8, 10}
 }

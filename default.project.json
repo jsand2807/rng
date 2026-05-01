@@ -16,6 +16,9 @@
         "$className": "Folder",
         "Frames": {
           "$className": "Folder" 
+        },
+        "InventorySlots": {
+          "$className": "Folder"
         }
       }
     },

@@ -2,6 +2,7 @@ local Modules = game:GetService("ReplicatedStorage"):WaitForChild("Modules")
 local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
 
 local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 
 local Player = game.Players.LocalPlayer
 local Data = Player:WaitForChild("Data")
@@ -10,17 +11,43 @@ local MainGUI = Player.PlayerGui:WaitForChild("MainGUI")
 local Roll = MainGUI.Roll
 local RollButton = Roll.Button
 
+local camera = game.Workspace.CurrentCamera
+
+local CinematicFrame1 = Player.PlayerGui:WaitForChild("MainGUI"):WaitForChild("RollDisplay"):WaitForChild("CinematicFrame1")
+local CinematicFrame2 = Player.PlayerGui:WaitForChild("MainGUI"):WaitForChild("RollDisplay"):WaitForChild("CinematicFrame2")
+
 local Notifications = require(Modules.Libraries.Notifications)
 
 local AuraFrame
 
+local cameraTweenIn1 = TweenService:Create(camera, TweenInfo.new(1.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut), { FieldOfView = 30 })
+local cameraTweenIn2 = TweenService:Create(camera, TweenInfo.new(0.75, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { FieldOfView = 30 })
+local cameraTweenOut = TweenService:Create(camera, TweenInfo.new(0.75, Enum.EasingStyle.Back, Enum.EasingDirection.InOut), { FieldOfView = 70 })
+
+local CinematicFrame1TweenIn = TweenService:Create(CinematicFrame1, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Position = UDim2.new(0.5, 0, 0.05, 0) })
+local CinematicFrame2TweenIn = TweenService:Create(CinematicFrame2, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Position = UDim2.new(0.5, 0, 0.95, 0) })
+local CinematicFrame1TweenOut = TweenService:Create(CinematicFrame1, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Position = UDim2.new(0.5, 0, -0.05, 0) })
+local CinematicFrame2TweenOut = TweenService:Create(CinematicFrame2, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Position = UDim2.new(0.5, 0, 1.05, 0) })
+
+local InventoryButton = Player.PlayerGui:WaitForChild("MainGUI"):WaitForChild("OpenInventory")
+local InventoryFrame = Player.PlayerGui:WaitForChild("MainGUI"):WaitForChild("Inventory")
+
+local MenuBlur = game.Lighting:WaitForChild("MenuBlur")
+
+local InventoryOpenTween = TweenService:Create(InventoryFrame, TweenInfo.new(0.75, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0)})
+local InventoryCloseTween = TweenService:Create(InventoryFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(0.5, 0, 0.65, 0)})
+
+local MenuBlurTweenIn = TweenService:Create(MenuBlur, TweenInfo.new(0.75, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = 10})
+local MenuBlurTweenOut = TweenService:Create(MenuBlur, TweenInfo.new(0.75, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = 0})
+
 local debounces = {
-    Roll = false
+	Roll = false,
+	Inventory = false
 }
 
-function DisplayDeleteWarning()
+--[[function DisplayDeleteWarning()
 
-end
+end]]
 
 RollButton.MouseButton1Click:Connect(function()
     if debounces.Roll then return end
@@ -37,12 +64,21 @@ RollButton.MouseButton1Click:Connect(function()
 
     local Info = TweenInfo.new(.5)
 
-    local OpeningTween = TweenService:Create(MainGUI.RollDisplay, Info, {BackgroundTransparency = 0.8})
-
+	local OpeningTween = TweenService:Create(MainGUI.RollDisplay, Info, {BackgroundTransparency = 0.8})
+	
+	CinematicFrame1.Visible = true
+	CinematicFrame2.Visible = true
+	cameraTweenIn1:Play()
     OpeningTween:Play()
-    OpeningTween.Completed:Wait()
+	OpeningTween.Completed:Wait()
+	
+	CinematicFrame1TweenIn:Play()
+	CinematicFrame2TweenIn:Play()
+	
+	InventoryFrame.Visible = false
+    InventoryButton.Visible = false
 
-    --[[local function IsFinalAuraDisplayed()
+    --[[local function IsFinalAuraDisplayed() -- used later
         local Rarity = AuraList[#AuraList].OneIn
         if Data.Settings.AutoRollEnabled.Value then
             if Rarity >= Data.Settings.DeleteWarningRarity.Value then
@@ -64,36 +100,46 @@ RollButton.MouseButton1Click:Connect(function()
 
         AuraFrame = Aura:Clone()
 
-        AuraFrame.Parent = MainGUI.RollDisplay
-        AuraFrame.Position = UDim2.new(0.327, 0, 0.3, 0)
+        AuraFrame.Parent = MainGUI.RollDisplay.CanvasGroup
+        AuraFrame.Position = UDim2.new(0.5, 0, -.75, 0)
 
-        local TimeBetweenTicks = .05 * (i + 1)
+        local TimeBetweenTicks = .05 * (i + 2)
 
         local Info = TweenInfo.new(TimeBetweenTicks)
-        local TweenData = {
-            Position = UDim2.new(0.327, 0, 0.35, 0)
-        }
+        local TweenData
 
-        if i == #AuraList then
+        if i ~= #AuraList then
+            TweenData = {
+                Position = UDim2.new(0.5, 0, 1.25, 0)
+            }
+        else
             AuraFrame.Chances.Visible = true
+            TweenData = {
+                Position = UDim2.new(0.5, 0, 0.5, 0)
+            }
         end
 
-        Player.PlayerGui.Audio.Click:Play()
+        Player.PlayerGui.Audio.SFX.Click:Play()
         local SwitchTween = TweenService:Create(AuraFrame, Info, TweenData)
         SwitchTween:Play()
         SwitchTween.Completed:Wait()
-        Player.PlayerGui.Audio.Click:Stop()
-        Player.PlayerGui.Audio.Click.TimePosition = 0
+        Player.PlayerGui.Audio.SFX.Click:Stop()
+        Player.PlayerGui.Audio.SFX.Click.TimePosition = 0
         if i ~= #AuraList then
             AuraFrame:Destroy()
         end
-    end
-
+	end
+	
+	CinematicFrame1TweenOut:Play()
+	CinematicFrame2TweenOut:Play()
+	
     MainGUI.RollDisplay.Keep.Visible = true
     MainGUI.RollDisplay.Delete.Visible = true
 end)
 
 MainGUI.RollDisplay.Keep.Button.MouseButton1Click:Connect(function()
+	cameraTweenOut:Play()
+	
     Remotes.AuraResponse:FireServer(true)
 
     MainGUI.RollDisplay.Keep.Visible = false
@@ -106,13 +152,16 @@ MainGUI.RollDisplay.Keep.Button.MouseButton1Click:Connect(function()
 
     ClosingTween:Play()
 
-    Roll.Visible = true
+	Roll.Visible = true
+	MainGUI.Inventory.Visible = true
     
     task.wait(1)
     debounces.Roll = false
 end)
 
 MainGUI.RollDisplay.Delete.Button.MouseButton1Click:Connect(function()
+	cameraTweenOut:Play()
+
     Remotes.AuraResponse:FireServer(false)
 
     MainGUI.RollDisplay.Keep.Visible = false
@@ -125,8 +174,31 @@ MainGUI.RollDisplay.Delete.Button.MouseButton1Click:Connect(function()
 
     ClosingTween:Play()
 
-    Roll.Visible = true
+	Roll.Visible = true
+	MainGUI.Inventory.Visible = true
     
     task.wait(1)
     debounces.Roll = false
+end)
+
+InventoryButton.MouseButton1Click:Connect(function()
+	if debounces.Inventory then return end
+	
+	if InventoryFrame.Visible == false then
+		cameraTweenIn2:Play()
+		InventoryFrame.Visible = true
+		InventoryOpenTween:Play()
+		MenuBlurTweenIn:Play()
+		debounces.Inventory = true
+		task.wait(.75)
+		debounces.Inventory = false
+	else
+		InventoryCloseTween:Play()
+		cameraTweenOut:Play()
+		MenuBlurTweenOut:Play()
+		debounces.Inventory = true
+		InventoryCloseTween.Completed:Wait()
+		InventoryFrame.Visible = false
+		debounces.Inventory = false
+	end
 end)
