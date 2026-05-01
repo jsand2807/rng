@@ -17,6 +17,7 @@ local CinematicFrame1 = Player.PlayerGui:WaitForChild("MainGUI"):WaitForChild("R
 local CinematicFrame2 = Player.PlayerGui:WaitForChild("MainGUI"):WaitForChild("RollDisplay"):WaitForChild("CinematicFrame2")
 
 local Notifications = require(Modules.Libraries.Notifications)
+local BuildGUIOrder = require(Modules.Libraries.BuildGUIOrder)
 
 local AuraFrame
 
@@ -66,17 +67,20 @@ RollButton.MouseButton1Click:Connect(function()
 
 	local OpeningTween = TweenService:Create(MainGUI.RollDisplay, Info, {BackgroundTransparency = 0.8})
 	
+    if InventoryFrame.Visible then
+        InventoryCloseTween:Play()
+        InventoryFrame.Visible = false
+    end
+    InventoryButton.Visible = false
 	CinematicFrame1.Visible = true
 	CinematicFrame2.Visible = true
 	cameraTweenIn1:Play()
     OpeningTween:Play()
 	OpeningTween.Completed:Wait()
-	
 	CinematicFrame1TweenIn:Play()
 	CinematicFrame2TweenIn:Play()
 	
-	InventoryFrame.Visible = false
-    InventoryButton.Visible = false
+	
 
     --[[local function IsFinalAuraDisplayed() -- used later
         local Rarity = AuraList[#AuraList].OneIn
@@ -137,6 +141,44 @@ RollButton.MouseButton1Click:Connect(function()
     MainGUI.RollDisplay.Delete.Visible = true
 end)
 
+function BuildInventory()
+    local Inventory = Data:FindFirstChild("Inventory")
+    if not Inventory then return end
+
+    for i,v in MainGUI.Inventory.AuraContainer:GetChildren() do
+        if v:IsA("Frame") then v:Destroy() end
+    end
+
+    local AuraList = {}
+
+    for i,v in Inventory:GetChildren() do
+        AuraList[i] = {
+            Name = v.Aura:FindFirstChild("Name").Value,
+            OneIn = v.Aura.OneIn.Value,
+            Luck = v.Luck.Value,
+            Date = v.Date.Value,
+            Rolls = v.Rolls.Value
+        }
+    end
+
+    table.sort(AuraList, function(a,b)
+        return a.OneIn > b.OneIn
+    end)
+
+    for i, aura in AuraList do
+        local Frame = game.ReplicatedStorage.AuraStuff.InventorySlots:FindFirstChild(aura.Name)
+        if not Frame then warn("Aura not found! Name: "..aura.Name) return end
+        local Clone = Frame:Clone()
+        Clone.Name = BuildGUIOrder.CreateOrderString(i)
+        Clone.Parent = MainGUI.Inventory.AuraContainer
+        Clone.Button.MouseButton1Click:Connect(function()
+            
+        end)
+    end
+end
+
+BuildInventory()
+
 MainGUI.RollDisplay.Keep.Button.MouseButton1Click:Connect(function()
 	cameraTweenOut:Play()
 	
@@ -152,8 +194,10 @@ MainGUI.RollDisplay.Keep.Button.MouseButton1Click:Connect(function()
 
     ClosingTween:Play()
 
+    BuildInventory()
+
 	Roll.Visible = true
-	MainGUI.Inventory.Visible = true
+	InventoryButton.Visible = true
     
     task.wait(1)
     debounces.Roll = false
@@ -175,7 +219,7 @@ MainGUI.RollDisplay.Delete.Button.MouseButton1Click:Connect(function()
     ClosingTween:Play()
 
 	Roll.Visible = true
-	MainGUI.Inventory.Visible = true
+	InventoryButton.Visible = true
     
     task.wait(1)
     debounces.Roll = false

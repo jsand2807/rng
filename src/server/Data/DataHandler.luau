@@ -1,7 +1,7 @@
 local module = {}
 
 local DSS = game:GetService("DataStoreService")
-local DataVer = "balls1"
+local DataVer = "balls3"
 local ExtraStr = DataVer
 if game["Run Service"]:IsStudio() then
     ExtraStr ..= "STUDIO"

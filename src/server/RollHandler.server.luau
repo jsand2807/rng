@@ -72,10 +72,11 @@ RollEvent.OnServerInvoke = function(player)
 
     local AuraData = {
         Aura = FinalAura,
-        Date = os.date(),
+        Date = os.date("%b %d, %Y, %I:%M %p"),
         Luck = CalculatedLuck,
         Locked = false,
-        ID = RandomID.GetRandomID(15)
+        ID = RandomID.GetRandomID(15),
+        Rolls = Data.Stats.Rolls.Value
     }
 
     PendingResponse[player] = AuraData

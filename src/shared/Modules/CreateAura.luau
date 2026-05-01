@@ -13,7 +13,8 @@ function module.new()
         Date = "",
         Luck = 0,
         Locked = false,
-        ID = ""
+        ID = "",
+        Rolls = 0
     }
 end
 
