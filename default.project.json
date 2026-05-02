@@ -19,6 +19,9 @@
         },
         "InventorySlots": {
           "$className": "Folder"
+        },
+        "InventoryInfo": {
+          "$className": "Folder"
         }
       }
     },

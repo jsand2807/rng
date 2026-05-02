@@ -157,7 +157,8 @@ function BuildInventory()
             OneIn = v.Aura.OneIn.Value,
             Luck = v.Luck.Value,
             Date = v.Date.Value,
-            Rolls = v.Rolls.Value
+            Rolls = v.Rolls.Value,
+            ID = v.ID.Value
         }
     end
 
@@ -166,13 +167,26 @@ function BuildInventory()
     end)
 
     for i, aura in AuraList do
+        local AuraInfo = MainGUI.Inventory.AuraInfo
+        if AuraInfo.AuraLabel:FindFirstChildOfClass("Frame") then
+            AuraInfo.AuraLabel:FindFirstChildOfClass("Frame"):Destroy()
+        end
         local Frame = game.ReplicatedStorage.AuraStuff.InventorySlots:FindFirstChild(aura.Name)
         if not Frame then warn("Aura not found! Name: "..aura.Name) return end
         local Clone = Frame:Clone()
         Clone.Name = BuildGUIOrder.CreateOrderString(i)
         Clone.Parent = MainGUI.Inventory.AuraContainer
         Clone.Button.MouseButton1Click:Connect(function()
-            
+            local Folder = MainGUI.Inventory.SelectedAuraInfo
+            Folder:FindFirstChild("Name").Value = aura.Name
+            Folder.Date.Value = aura.Date
+            Folder.Rolls.Value = aura.Rolls
+            Folder.Luck.Value = aura.Luck
+            local Frame = game.ReplicatedStorage.AuraStuff.InventoryInfo:FindFirstChild(aura.Name)
+            if not Frame then warn("Frame not found") return end
+            local Clone = Frame:Clone()
+            Clone.Parent = AuraInfo.AuraLabel
+            AuraInfo.RollInfo.ActualInfo.Text = "Rolled at: "..aura.Rolls.." Rolls\nWith luck of x"..aura.Luck.."\nDate rolled: "..aura.Date
         end)
     end
 end
