@@ -168,16 +168,16 @@ function BuildInventory()
 
     for i, aura in AuraList do
         local AuraInfo = MainGUI.Inventory.AuraInfo
-        if AuraInfo.AuraLabel:FindFirstChildOfClass("Frame") then
-            AuraInfo.AuraLabel:FindFirstChildOfClass("Frame"):Destroy()
-        end
         local Frame = game.ReplicatedStorage.AuraStuff.InventorySlots:FindFirstChild(aura.Name)
         if not Frame then warn("Aura not found! Name: "..aura.Name) return end
         local Clone = Frame:Clone()
         Clone.Name = BuildGUIOrder.CreateOrderString(i)
         Clone.Parent = MainGUI.Inventory.AuraContainer
         Clone.Button.MouseButton1Click:Connect(function()
-            local Folder = MainGUI.Inventory.SelectedAuraInfo
+            local Folder = MainGUI.Inventory.SelectedAuraInfo 
+            if Folder:FindFirstChild("Name").Value ~= "None" then
+                AuraInfo.AuraLabel:FindFirstChild(Folder:FindFirstChild("Name").Value):Destroy()
+            end
             Folder:FindFirstChild("Name").Value = aura.Name
             Folder.Date.Value = aura.Date
             Folder.Rolls.Value = aura.Rolls
